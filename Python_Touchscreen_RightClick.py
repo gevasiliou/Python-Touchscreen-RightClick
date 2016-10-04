@@ -5,7 +5,7 @@ a right click option with Touchscreens in the Ubuntu unity environment.
 This is implemented with the evdev Python library on an ELAN touchscreen.
 
 Currently implements 2 types of right click options:
-1 finger long touch: Timeout of 1.7 seconds, movement cancels action
+1 finger long touch: Timeout of 0.7 seconds, movement cancels action
 2 finger tap: movement cancels action
 
 Modified by gevasiliou (GV) , October 2016
@@ -33,7 +33,7 @@ class TrackedEvent(object):
         self.discard = 0
         self.moved = 0
         self.track_start = None
-        self.click_delay = 1.7
+        self.click_delay = 0.7
 
     def add_finger(self, slot):
         """  Add a detected finger. """
