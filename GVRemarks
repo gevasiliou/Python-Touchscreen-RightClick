@@ -1,0 +1,23 @@
+In order to use Python with python-evdev and pymouse in the script you need to install 
+$ sudo apt-get install python-dev python-pip gcc
+$ sudo apt-get install linux-headers-$(uname -r)
+$ sudo pip install --system python-evdev
+$ sudo pip install --system python-xlib
+$ sudo pip install --system pymouse
+
+PS: if you install pymouse and older version will be installed, but it works on the script.
+For newer version you need to install PyUserInput which includes PyMouse and PyKeyboard modules.
+
+If you are not sure which events are supported by your device, you can run a script like this to identify your device capabilities:
+
+from evdev import InputDevice, InputEvent, UInput, categorize, ecodes as e
+device = InputDevice('/dev/input/event2') # adjust the correct event number
+cap = device.capabilities(verbose=True,absinfo=True)
+print('Device Capabilities:', cap) 
+
+The device capabilities are printed in the format event type: value1, value2, value3
+
+Similar info can be obtained by using the linux $sudo evtest utility (apt install if missing).
+
+In my ELAN Touch Screen, turned out that EV_KEY type has only value 333=BTN_TOUCH.
+My device capabilites do not list BTN_LEFT, BTN_RIGHT.
