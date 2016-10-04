@@ -35,11 +35,13 @@ exit 0
 Please note that in order to access the input device for the touchscreen, you will need sudo to run the scipt.
 
 
-Modifications by gevasiliou - Oct 2016
+PModifications by gevasiliou - Oct 2016
+======================
 Tested on Toshiba Radius 11 convertible laptop with Debian 8.5 SID and XFCE, Kernel 4.7 and ELAN Touchscreen.
 PS: In my system this ELAN screen is "usb connected" and not I2C (serial connection).
 
 The whole script grab nicely my touchscreen events, fingers were correctly understood but i had the following bugs:
+
 1. My ELAN seems to be too sensitive and as a result even when you think that you keep your finger steady at a point of the screen, actually there is a slight movement that changes the ABS_X and ABS_Y coordinates (usually 5-10 pixels).
 As a result initial script is considering this slight change as a finger movement, cancelling the right click event.
 As a workaround i modified the script to allow a small movement of +/- 50 pixels.
