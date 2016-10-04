@@ -1,5 +1,5 @@
 """
-Python Script for adding 1 & 2 finger multitouch gestures to implement
+Zyell's Python Script for adding 1 & 2 finger multitouch gestures to implement
 a right click option with Touchscreens in the Ubuntu unity environment.
 
 This is implemented with the evdev Python library on an ELAN touchscreen.
