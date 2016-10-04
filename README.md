@@ -35,7 +35,7 @@ exit 0
 Please note that in order to access the input device for the touchscreen, you will need sudo to run the scipt.
 
 
-PModifications by gevasiliou - Oct 2016
+Modifications by gevasiliou - Oct 2016
 ======================
 Tested on Toshiba Radius 11 convertible laptop with Debian 8.5 SID and XFCE, Kernel 4.7 and ELAN Touchscreen.
 PS: In my system this ELAN screen is "usb connected" and not I2C (serial connection).
