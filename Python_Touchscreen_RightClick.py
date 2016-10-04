@@ -7,9 +7,12 @@ This is implemented with the evdev Python library on an ELAN touchscreen.
 Currently implements 2 types of right click options:
 1 finger long touch: Timeout of 1.7 seconds, movement cancels action
 2 finger tap: movement cancels action
+
+Modified by gevasiliou (GV) , October 2016
 """
 
 from evdev import InputDevice, ecodes, UInput, list_devices
+from pymouse import PyMouse  #GV added. Requires pymouse and python-xlib libraries
 import datetime
 
 
@@ -66,7 +69,16 @@ class TrackedEvent(object):
         if self.position[event_code] is None:
             self.position[event_code] = value
         else:
-            self._moved_event()
+            #print('movement detected....')  
+            #print('position event old value=', self.position[event_code])
+            #print('position event new value=', value)
+            OldValue = self.position[event_code]  #gv added
+            NewValue = value  #gv added
+            diff = OldValue - NewValue	#gv added
+            #print('difference=',diff)
+            if abs(diff) > 50:  #gv added :allows a movement of +/- 50 pixels before to cancel right click 
+                print('movement more than treshold, cancelling right click')
+                self._moved_event()
 
     def trackit(self):
         """ start timing for long press """
@@ -85,15 +97,23 @@ class TrackedEvent(object):
 
     def _initiate_right_click(self):
         """ Internal method for initiating a right click at touch point. """
-        capabilities = {ecodes.EV_ABS: (ecodes.ABS_X, ecodes.ABS_Y),
-                        ecodes.EV_KEY: (ecodes.BTN_LEFT, ecodes.BTN_RIGHT)}
-        with UInput(capabilities) as ui:
-            ui.write(ecodes.EV_ABS, ecodes.ABS_X, 0)
-            ui.write(ecodes.EV_ABS, ecodes.ABS_Y, 0)
-            ui.write(ecodes.EV_KEY, ecodes.BTN_RIGHT, 1)
-            ui.write(ecodes.EV_KEY, ecodes.BTN_RIGHT, 0)
-            ui.syn()
-
+        #capabilities = {ecodes.EV_ABS: (ecodes.ABS_X, ecodes.ABS_Y),
+        #                ecodes.EV_KEY: (ecodes.BTN_LEFT, ecodes.BTN_RIGHT)}
+        #with UInput(capabilities) as ui:
+        #    ui.write(ecodes.EV_ABS, ecodes.ABS_X, 0)
+        #    ui.write(ecodes.EV_ABS, ecodes.ABS_Y, 0)
+        #    ui.write(ecodes.EV_KEY, ecodes.BTN_RIGHT, 1)
+        #    ui.write(ecodes.EV_KEY, ecodes.BTN_RIGHT, 0)
+        #    ui.syn()
+        """ 
+        GV: Pytho-EvDev method "ui.write" did not work on my ELAN Screen - usb connected.
+        On the other hand the use of pymouse worked ok.
+        """
+        m = PyMouse()  # gv: use of pymouse module
+        x, y = m.position()  # gv: gets mouse current position coordinates during click
+        #print('position:', x, y)  #gv: just for debugging
+        m.click(x, y, 2)  # gv: the third argument represents the mouse button click (1 left,2 right,3 middle)
+        # GV: Right click is sent to wherever your mouse pointer is on the time of click.
 
 def initiate_gesture_find():
     """
