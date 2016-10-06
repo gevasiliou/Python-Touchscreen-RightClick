@@ -11,8 +11,8 @@ Currently implements 2 types of right click options:
 Modified by gevasiliou (GV) , October 2016
 """
 
-from evdev import InputDevice, ecodes, UInput, list_devices
-from pymouse import PyMouse  #GV added. Requires pymouse and python-xlib libraries
+from evdev import InputDevice, ecodes, UInput, list_devices, AbsInfo #GV: AbsInfo imported
+from pymouse import PyMouse  #GV added
 import datetime
 
 
@@ -69,13 +69,9 @@ class TrackedEvent(object):
         if self.position[event_code] is None:
             self.position[event_code] = value
         else:
-            #print('movement detected....')  
-            #print('position event old value=', self.position[event_code])
-            #print('position event new value=', value)
             OldValue = self.position[event_code]  #gv added
             NewValue = value  #gv added
             diff = OldValue - NewValue	#gv added
-            #print('difference=',diff)
             if abs(diff) > 50:  #gv added :allows a movement of +/- 50 pixels before to cancel right click 
                 print('movement more than treshold, cancelling right click')
                 self._moved_event()
@@ -97,18 +93,28 @@ class TrackedEvent(object):
 
     def _initiate_right_click(self):
         """ Internal method for initiating a right click at touch point. """
-        #capabilities = {ecodes.EV_ABS: (ecodes.ABS_X, ecodes.ABS_Y),
-        #                ecodes.EV_KEY: (ecodes.BTN_LEFT, ecodes.BTN_RIGHT)}
-        #with UInput(capabilities) as ui:
-        #    ui.write(ecodes.EV_ABS, ecodes.ABS_X, 0)
-        #    ui.write(ecodes.EV_ABS, ecodes.ABS_Y, 0)
-        #    ui.write(ecodes.EV_KEY, ecodes.BTN_RIGHT, 1)
-        #    ui.write(ecodes.EV_KEY, ecodes.BTN_RIGHT, 0)
-        #    ui.syn()
-        """ 
-        GV: Pytho-EvDev method "ui.write" did not work on my ELAN Screen - usb connected.
-        On the other hand the use of pymouse worked ok.
         """
+        #Zyell Script - Original Code:
+        capabilities = {ecodes.EV_ABS: (ecodes.ABS_X, ecodes.ABS_Y),
+                        ecodes.EV_KEY: (ecodes.BTN_LEFT, ecodes.BTN_RIGHT)}
+        
+        # Code that worked for my setup
+        capabilities = {
+			ecodes.EV_KEY : [ecodes.BTN_LEFT, ecodes.BTN_RIGHT],
+			ecodes.EV_ABS : [(ecodes.ABS_X, AbsInfo(value=1900, min=0, max=3264, fuzz=0, flat=0, resolution=13)),
+				(ecodes.ABS_Y, AbsInfo(1050, 0, 1856, 0, 0, 13))]
+		}
+        # Values for min,max,fuzz,flat and resolution have been copied by my touch screen capabilities (running evtest)
+        
+        # Event injection bellow with ui.write works ok (applying modified device capabilities) but i decided to use pymouse.
+        with UInput(capabilities) as ui:
+            ui.write(ecodes.EV_ABS, ecodes.ABS_X, 0)
+            ui.write(ecodes.EV_ABS, ecodes.ABS_Y, 0)
+            ui.write(ecodes.EV_KEY, ecodes.BTN_RIGHT, 1)
+            ui.write(ecodes.EV_KEY, ecodes.BTN_RIGHT, 0)
+            ui.syn()
+            ui.close() # GV added - Maybe is not correct to close ui
+        """ 
         m = PyMouse()  # gv: use of pymouse module
         x, y = m.position()  # gv: gets mouse current position coordinates during click
         #print('position:', x, y)  #gv: just for debugging
