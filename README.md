@@ -42,13 +42,10 @@ PS: In my system this ELAN screen is "usb connected" and not I2C (serial connect
 
 The whole script grab nicely my touchscreen events, fingers were correctly understood but i had the following bugs:
 
-1. My ELAN seems to be too sensitive and as a result even when you think that you keep your finger steady at a point of the screen, actually there is a slight movement that changes the ABS_X and ABS_Y coordinates (usually 5-10 pixels).
-As a result initial script is considering this slight change as a finger movement, cancelling the right click event.
-As a workaround i modified the script to allow a small movement of +/- 50 pixels.
-
-2. The event injection method of evdev (ui.write) didn't worked in my system for some unknown reason. 
+1. The event injection method of evdev (ui.write) doesn't work good on my system.
 Thus i used a different method to inject a right click event using pymouse which worked fine. 
-In order to use pymouse you need to pip install pymouse and python-xlib
+In order to use pymouse you need to pip install pymouse and also python-xlib
 
-Other Bugs:
-There is a minor confusion when the script runs in Google Chrome web browser, due to the fact that Chrome natively supports right click by touchscreens in it's userspace.
+Bugs:
+There is a minor confusion when the script runs in Google Chrome userspace, due to the fact that Chrome natively supports right click by touchscreens. 
+
